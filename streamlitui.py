@@ -47,7 +47,8 @@ if "patient_data" not in st.session_state:
 st.markdown('<div class="container">', unsafe_allow_html=True)
 
 # Streamlit UI
-st.title(" IntelliHealth : 🩺 Health Plan Advisor ")
+st.markdown("<h1 style='text-align: center;'>IntelliHealth 🩺<br>Health Plan Advisor</h1>", unsafe_allow_html=True)
+
 
 # Option to select AI model
 model_option = st.selectbox("🤖 **Select AI Model**", ["Model A", "Model B", "Model C"])
