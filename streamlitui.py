@@ -7,7 +7,7 @@ def get_base64_image(image_path):
         return base64.b64encode(img_file.read()).decode()
 
 # Path to your local image
-image_path = "/Users/nishita/Documents/Northeastern/GitProjects/Intellihealth-Health-Plan-Advisor/10554240.jpg"
+image_path = "./10554240.jpg"
 
 # Convert image to base64
 base64_img = get_base64_image(image_path)
