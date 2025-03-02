@@ -1,0 +1,32 @@
+services:
+  app:
+    build: .  # Build the Docker image from the Dockerfile in the current directory
+    ports:
+      - "8000:80"  # Map port 8000 on your local machine to port 80 in the container
+    env_file:  # Load environment variables from the .env file
+      - .env
+    volumes:  # Mount the current directory for live-reloading in development
+      - .:/app
+
+
+  db:
+    image: postgres:latest  # Use the official PostgreSQL image
+    environment:  # Set PostgreSQL environment variables
+      - .env
+    ports:
+      - "5432:5432"  # Map port 5432 on your local machine to port 5432 in the container
+    volumes:  # Persist PostgreSQL data locally
+      - db_data:/var/lib/postgresql/data
+
+  neo4j:
+    image: neo4j:latest
+    container_name: neo4j
+    ports:
+      - "7474:7474" # Neo4j Browser
+      - "7687:7687" # Bolt protocol
+    environment:
+      - .env
+
+
+volumes:
+  db_data:  # Volume to store PostgreSQL data persistently
