@@ -49,4 +49,6 @@ This project aims to reduce financial strain and unnecessary spending by helping
    NEO4J_URI=bolt://neo4j:7687
    NEO4J_AUTH=neo4j/neo4jpassword
 
-Time to configure the magic behind the scenes! We’ve provided a handy .env.example file as a template. Duplicate it to .env, then fill in your database and service credentials. Think of this as giving IntelliHealth the keys to connect to PostgreSQL, Snowflake, and Neo4j. Replace placeholders like <your-user> with your actual Snowflake details—don’t worry, we won’t peek!
+   Time to configure the magic behind the scenes! We’ve provided a handy .env.example file as a template. Duplicate it to .env, then fill in your database and service credentials. 
+   Think of this as giving IntelliHealth the keys to connect to PostgreSQL, Snowflake, and Neo4j. Replace placeholders like <your-user> with your actual Snowflake details—don’t 
+   worry, we won’t peek!
