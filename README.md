@@ -34,3 +34,19 @@ This project aims to reduce financial strain and unnecessary spending by helping
    ```bash
    git clone https://github.com/<your-repo-org>/intellihealth.git
    cd intellihealth
+
+2. **Set Up Environment**:
+   Copy .env.example to .env and populate with credentials:
+   
+   DATABASE_URL=postgresql://user:password@localhost:5432/intellihealth_db
+   SNOWFLAKE_USER=<your-user>
+   SNOWFLAKE_PASSWORD=<your-password>
+   SNOWFLAKE_ACCOUNT=<your-account>
+   SNOWFLAKE_WAREHOUSE=HEALTHCARE
+   SNOWFLAKE_DATABASE=HEALTHCARE_INSURANCE_DB
+   SNOWFLAKE_SCHEMA=PLAN_SCHEMA
+   SNOWFLAKE_ROLE=<your-role>
+   NEO4J_URI=bolt://neo4j:7687
+   NEO4J_AUTH=neo4j/neo4jpassword
+
+Time to configure the magic behind the scenes! We’ve provided a handy .env.example file as a template. Duplicate it to .env, then fill in your database and service credentials. Think of this as giving IntelliHealth the keys to connect to PostgreSQL, Snowflake, and Neo4j. Replace placeholders like <your-user> with your actual Snowflake details—don’t worry, we won’t peek!
