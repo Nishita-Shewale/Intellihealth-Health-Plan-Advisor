@@ -10,23 +10,23 @@ Below are the tasks and subtasks assigned to **AnoushkaBansal** and **Nishita-Sh
 ## 2. Database Setup
 - **PostgreSQL**
   - [x] Define `Patient` model - *Completed*
-  - [ ] Add Alembic migrations
+  - [x] Add Alembic migrations - *Completed*
     - **AnoushkaBansal**: Install Alembic, create initial migration for `patients` table, test rollback functionality.
 - **Snowflake**
   - [x] Implement connection and normalization - *Completed*
-  - [ ] Populate with `cleaned_plans_data.csv`
+  - [x] Populate with `cleaned_plans_data.csv` - *Completed*
     - **Nishita-Shewale**: Develop `load_to_snowflake.py` to upload CSV using batch inserts for efficiency.
     - **Nishita-Shewale**: Validate data integrity (e.g., `SELECT COUNT(*)` matches CSV rows, check numeric fields).
-  - [ ] Align schema with `InsurancePlan`
+  - [x] Align schema with `InsurancePlan` - *Completed*
     - **AnoushkaBansal**: Update `generated_model.py` to enforce `FLOAT` for monetary fields (e.g., `SpecialtyDrugMaximumCoinsurance`), sync with Snowflake schema.
 - **Neo4j**
   - [x] Set up driver - *Completed*
-  - [ ] Document schema
+  - [x] Document schema - *Completed*
     - **Nishita-Shewale**: Create `neo4j_schema.md` detailing nodes (`Patient`, `Plan`) and relationships (e.g., `CONSIDERS`, rule-specific edges).
 
 ## 3. Data Processing
 - [x] Clean CSV data - *Completed*
-- [ ] Upload to Snowflake
+- [x] Upload to Snowflake - *Completed*
   - **Nishita-Shewale**: (See Snowflake population task above)
 - [ ] Enhance normalization
   - **AnoushkaBansal**: Extend `normalize_snowflake_data` to handle edge cases (e.g., malformed dates, null values in critical fields).
