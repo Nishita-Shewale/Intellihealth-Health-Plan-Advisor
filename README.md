@@ -1,35 +1,66 @@
-# Intelligent Health Plan Advisor (IntelliHealth)
+# 🧠 Intelligent Health Plan Advisor (IntelliHealth)
 
-**Date**: April 09, 2025
+**Last Updated**: April 2025
 
-## Project Details
+---
 
-### Description
-**Intelligent Health Plan Advisor (IntelliHealth)** is a FastAPI-based application designed to simplify the complex process of selecting health insurance plans in the U.S. healthcare ecosystem. By integrating patient demographic and health data (stored in PostgreSQL) with a comprehensive dataset of insurance plans (sourced from Snowflake) and applying a rule-based recommendation engine (powered by Neo4j), IntelliHealth delivers personalized plan recommendations. The system exposes a RESTful API for managing patient profiles, retrieving plans, filtering based on individual needs, and analyzing plan suitability through rule satisfaction metrics.
+## 📝 Project Overview
 
-This project aims to reduce financial strain and unnecessary spending by helping individuals choose plans that align with their unique health and economic needs. It leverages advanced data processing and graph-based reasoning to cut through the noise of insurance options, addressing a critical pain point in the U.S. healthcare economy.
+**IntelliHealth** is an intelligent backend system designed to recommend U.S. health insurance plans based on patient demographics, healthcare needs, and financial constraints. The system integrates three powerful data layers — **PostgreSQL**, **Snowflake**, and **Neo4j** — along with **Large Language Models (LLMs)** to make advanced, explainable plan recommendations.
 
-### Features
-- **Patient Management**: Create, retrieve, and manage patient profiles via API endpoints.
-- **Plan Retrieval**: Fetch and normalize insurance plans from Snowflake with pagination support.
-- **Plan Filtering**: Match plans to patient criteria such as state, budget category, and medical conditions.
-- **Rule-Based Recommendations**: Apply dynamic rules in Neo4j (e.g., Diabetes, Maternity) for tailored plan suggestions.
-- **Plan Distribution Analysis**: Evaluate how many plans satisfy varying numbers of rules per patient.
-- **Data Normalization**: Clean and standardize data from CSV files and database sources for consistency.
-- **Research Integration**: Experiment with Chain-of-Thought (CoT) reasoning using advanced LLMs to enhance decision-making logic.
+---
 
-### Tech Stack
-- **Backend**: FastAPI (Python)
-- **Databases**:
-  - PostgreSQL (patient data storage)
-  - Snowflake (insurance plans data warehouse)
-  - Neo4j (graph-based rule engine)
-- **Libraries**: SQLAlchemy, Pydantic, Pandas, Neo4j Driver, Snowflake Connector
-- **Deployment**: Docker Compose
-- **Frontend (In Progress)**: Streamlit (UI testing phase)
-- **Research Tools**: OpenAI o1, Deepseek R1, GPT-4o (for CoT experimentation)
+## 🎯 Key Features
 
-### Installation
+### 🔐 Patient Profile Management
+- Create, retrieve, and manage patient data (stored in **PostgreSQL**)
+- Demographics include medical history, lifestyle, occupation, budget, family status
+
+### 📊 Insurance Plan Retrieval & Filtering
+- Query large-scale plan data from **Snowflake**
+- Apply initial filtering based on patient state, budget tier, medical needs, and travel preferences
+- Data normalization ensures compatibility with internal models
+
+### ⚖️ Rule-Based Plan Scoring (Neo4j)
+- Apply **customized rules** to further filter plans dynamically based on:
+  - Chronic conditions (e.g. **Diabetes Rule**)
+  - Age group (**Older Adults Rule**)
+  - Gender and age (**Maternity Rule**)
+  - Family needs (**Family Coverage Rule**)
+- Rule logic uses **per-plan-type median thresholds** for fairness
+
+### 🤖 LLM-Based Dynamic Scoring
+- Plans passing Neo4j rules are ranked using **Chain-of-Thought (CoT)** prompting
+- LLMs evaluate each plan attribute’s relevance to the patient context
+- Scoring is **dynamic**, **explainable**, and personalized
+
+
+### 🔄 Multi-Model LLM Support
+- Supports both **Snowflake Cortex (Claude)** and **OpenAI models (GPT-4o, o3)**
+- Flexible backend toggle allows switching models at runtime
+- Normalized output structure ensures consistent frontend rendering
+
+### 📈 Plan Distribution & Rule Metrics
+- Visual breakdown of how many rules each plan satisfies
+- PlanType summaries (e.g., HMO vs PPO match count) assist downstream decisions
+
+---
+
+## 🧰 Tech Stack
+
+| Layer            | Tool                          |
+|------------------|-------------------------------|
+| **Backend**      | FastAPI (Python)              |
+| **Databases**    | PostgreSQL, Snowflake, Neo4j  |
+| **LLMs**         | OpenAI GPT-4o, GPT-o3, Claude via Cortex |
+| **Libraries**    | SQLAlchemy, Pydantic, Pandas, Neo4j Driver, Snowflake Connector |
+| **DevOps**       | Docker Compose, .env support  |
+| **Frontend**     | Streamlit (in progress)       |
+
+---
+
+## ⚙️ Installation
+
 1. **Clone the Repository**:
    ```bash
    git clone https://github.com/<your-repo-org>/intellihealth.git
@@ -49,6 +80,25 @@ This project aims to reduce financial strain and unnecessary spending by helping
    NEO4J_URI=bolt://neo4j:7687
    NEO4J_AUTH=neo4j/neo4jpassword
 
-   Time to configure the magic behind the scenes! We’ve provided a handy .env.example file as a template. Duplicate it to .env, then fill in your database and service credentials. 
-   Think of this as giving IntelliHealth the keys to connect to PostgreSQL, Snowflake, and Neo4j. Replace placeholders like <your-user> with your actual Snowflake details—don’t 
-   worry, we won’t peek!
+
+## 📬 API Highlights
+
+- `POST /patients/` → Add patient
+- `GET /insurance-plans/` → View all plans
+- `POST /filter-plans/` → SQL-level filtering via Snowflake
+- `POST /process-plans/` → Apply Neo4j rules and match plans
+- `GET /plan-distribution/` → See how many rules each plan satisfies
+- `POST /recommend-insurance/` → LLM-based scoring (select model dynamically)
+
+---
+
+## 🧠 What Makes It Smart?
+
+- Uses **summary statistics** to dynamically adjust rule thresholds  
+  _(e.g., medians for different PlanTypes)_
+- Leverages **LLMs** to mimic expert reasoning for plan recommendation
+- Capable of adapting to **multiple models** and **changing attributes** without rewriting code
+
+ Time to configure the magic behind the scenes! We’ve provided a handy .env.example file as a template. Duplicate it to .env, then fill in your database and service credentials. 
+ Think of this as giving IntelliHealth the keys to connect to PostgreSQL, Snowflake, and Neo4j. Replace placeholders like <your-user> with your actual Snowflake details—don’t 
+ worry, we won’t peek!
