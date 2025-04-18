@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+sqlalchemy
+psycopg2-binary
+pandas
+pydantic
+neo4j
+snowflake-connector-python>=3.0.0
+openai>=1.0.0
+
