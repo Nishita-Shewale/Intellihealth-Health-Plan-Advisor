@@ -55,7 +55,7 @@
 | **LLMs**         | OpenAI GPT-4o, GPT-o3, Claude via Cortex |
 | **Libraries**    | SQLAlchemy, Pydantic, Pandas, Neo4j Driver, Snowflake Connector |
 | **DevOps**       | Docker Compose, .env support  |
-| **Frontend**     | Streamlit (in progress)       |
+| **Frontend**     | Streamlit                     |
 
 ---
 
