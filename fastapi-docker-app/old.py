@@ -139,3 +139,213 @@ def filter_plans(db: Session, patient_data: dict) -> List[models.InsurancePlan]:
 
     cleaned_plans = [clean_data(plan) for plan in db_plans]
     return cleaned_plans, total_count
+
+
+def execute_cortex_query(patient_data: dict, plan_ids, model_name: str = "llama3.1-405b"):
+    plans = fetch_selected_insurance_plans(plan_ids)
+    if not plans:
+        return {"error": "No plans retrieved from Snowflake"}
+
+    prompt_payload = build_llm_prompt(patient_data, plans)
+
+    try:
+        #prompt_json = json.dumps(prompt_payload)
+        prompt_json = json.dumps(prompt_payload, ensure_ascii=False).replace("'", "''")
+        print("🧾 Prompt JSON being sent:")
+        print(prompt_json)
+
+        # Build the SQL query with all values directly interpolated (no parameter binding)
+        parameters={
+            "temperature": 0.5,
+            "max_tokens": 4000,
+            "top_p": 0.9,
+            "response_format": {
+                "type": "json",
+                "schema": {
+                "type": "object",
+                "properties": {
+                    "recommended_plans": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                        "rank": { "type": "integer" },
+                        "PlanId": { "type": "string" },
+                        "PlanMarketingName": { "type": "string" },
+                        "IssuerName": { "type": "string" },
+                        "MetalLevel": { "type": "string" },
+                        "Deductible": { "type": "number" },
+                        "MaxOutOfPocket": { "type": "number" },
+                        "TotalScore": { "type": "integer" },
+                        "Justification": { "type": "string" },
+                        "OutOfCountryCoverage": { "type": "string" },
+                        "OutOfServiceAreaCoverage": { "type": "string" },
+                        "WellnessProgramOffered": { "type": "string" },
+                        "DiseaseManagementProgramsOffered": { "type": "string" },
+                        "IsReferralRequiredForSpecialist": { "type": "string" },
+                        "IsHSAEligible": { "type": "string" },
+                        "SBCHavingSimplefractureDeductible": { "type": "string" },
+                        "SBCHavingSimplefractureCoinsurance": { "type": "string" },
+                        "ChildOnlyOffering": { "type": "string" },
+                        "StateCode": { "type": "string" },
+                        "PlanEffectiveDate": { "type": "string" },
+                        "PlanExpirationDate": { "type": "string" }
+                        },
+                        "required": [
+                        "rank",
+                        "PlanId",
+                        "PlanMarketingName",
+                        "IssuerName",
+                        "MetalLevel",
+                        "Deductible",
+                        "MaxOutOfPocket",
+                        "TotalScore",
+                        "Justification"
+                        ]
+                    }
+                    }
+                }
+                }
+            }
+            }
+        parameters_json_sql = json.dumps(parameters).replace("'", "''")
+        sql_query = f"""
+            SELECT SNOWFLAKE.CORTEX.COMPLETE(
+                '{model_name}',
+                PARSE_JSON('{prompt_json}'),
+                PARSE_JSON('{parameters_json_sql}')
+            ) AS recommendations;
+        """
+        
+        conn = get_snowflake_connection()
+        cursor = conn.cursor()
+        print("🧠 Executing Cortex SQL...")
+        print(textwrap.indent(sql_query, "  "))  # Indent the SQL query for better readability
+        cursor.execute(sql_query)  # No parameter binding
+        
+
+        result = cursor.fetchone()
+        if not result:
+            return {"error": "No response from Cortex"}
+
+        raw_output = result[0]
+        print(f"🔹 Raw LLM Output: {raw_output}")
+
+        try:
+            return json.loads(raw_output)
+        except json.JSONDecodeError as e:
+            return {
+                "error": f"JSON parsing failed: {str(e)}",
+                "raw_output": raw_output
+            }
+
+    except Exception as e:
+        return {"error": f"Error executing Cortex: {str(e)}"}
+    
+    finally:
+        cursor.close()
+        conn.close()
+
+
+
+# **SECTION 3: LLM Recommendation**
+if "plans" in st.session_state and st.session_state.plans:
+    st.subheader("🧠 AI-Powered Plan Recommendation")
+
+    # Store recommendation in session state to persist across reruns
+    if "llm_recommendation" not in st.session_state:
+        st.session_state.llm_recommendation = None
+    
+    # Debug container that stays visible
+    debug_container = st.empty()
+    
+    if st.button("🤖 Get AI Recommendation"):
+        with st.spinner("Calling AI model..."):
+            response = requests.post(f"{BACKEND_URL}/recommend-insurance/", params={
+                "patient_id": st.session_state.patient_id,
+                "plan_type": st.session_state.selected_plan_type.strip(),
+                "model_name": st.session_state.selected_llm_model.strip(),
+            })
+            
+        # Always store the raw text response in session state
+        st.session_state.raw_response = response.text
+            
+        if response.status_code == 200:
+            try:
+                # Store the parsed response
+                st.session_state.llm_recommendation = response.json()
+                st.rerun() # Rerun to ensure UI updates correctly
+            except Exception as e:
+                st.error(f"❌ Failed to parse JSON response: {str(e)}")
+                st.code(response.text, language="json")
+        else:
+            st.error(f"❌ Error retrieving AI recommendation: {response.status_code}")
+            st.code(response.text)
+    
+    # Show debug toggle (outside the button click handler)
+    show_raw = st.checkbox("Show raw response")
+    if show_raw and hasattr(st.session_state, "raw_response"):
+        debug_container.code(st.session_state.raw_response, language="json")
+    
+    # Display recommendation (outside the button click handler)
+    if st.session_state.llm_recommendation is not None:
+        recommendation = st.session_state.llm_recommendation
+        
+        # Handle the extra nesting level - check for recommendations.recommended_plans
+        recommended_plans = None
+        if "recommendations" in recommendation and "recommended_plans" in recommendation["recommendations"]:
+            recommended_plans = recommendation["recommendations"]["recommended_plans"]
+        elif "recommended_plans" in recommendation:
+            recommended_plans = recommendation["recommended_plans"]
+        
+        # Check if we found plans in any structure
+        if recommended_plans and len(recommended_plans) > 0:
+            st.success(f"✅ Found {len(recommended_plans)} AI-recommended plans!")
+            
+            # Display plans
+            for idx, plan in enumerate(recommended_plans, start=1):
+                # Get plan name with fallback
+                plan_name = plan.get('plan_marketing_name', f'Plan {idx}')
+                rank = plan.get('rank', idx)
+                
+                with st.expander(f"🏥 **Rank {rank}: {plan_name}**"):
+                    # First display key attributes if they exist
+                    key_attributes = ["issuer_name", "metal_level", "deductible", "max_out_of_pocket"]
+                    
+                    # Create columns for key attributes that exist
+                    existing_keys = [k for k in key_attributes if k in plan]
+                    if existing_keys:
+                        cols = st.columns(len(existing_keys))
+                        for i, key in enumerate(existing_keys):
+                            with cols[i]:
+                                st.markdown(f"**{key.replace('_', ' ').title()}:**  \n{plan[key]}")
+                    
+                    # Special handling for justification
+                    if "justification" in plan:
+                        st.markdown("### Justification")
+                        st.markdown(plan["justification"])
+                    
+                    # Display all other attributes
+                    st.markdown("### All Plan Details")
+                    for key, value in plan.items():
+                        if key == "justification":
+                            continue
+                        formatted_key = key.replace('_', ' ').title()
+                        
+                        # Handle different value types
+                        if isinstance(value, dict):
+                            st.markdown(f"**{formatted_key}:**")
+                            st.json(value)
+                        elif isinstance(value, list):
+                            st.markdown(f"**{formatted_key}:**")
+                            for item in value:
+                                st.markdown(f"- {item}")
+                        else:
+                            st.markdown(f"**{formatted_key}:** {value}")
+        else:
+            st.warning("⚠️ No recommended plans found in the response.")
+            st.write("Available keys in response:", list(recommendation.keys()) if isinstance(recommendation, dict) else "Not a dictionary")
+            
+            # If we have a recommendations key but no plans, show its structure
+            if "recommendations" in recommendation:
+                st.write("Keys in 'recommendations':", list(recommendation["recommendations"].keys()) if isinstance(recommendation["recommendations"], dict) else "Not a dictionary")
