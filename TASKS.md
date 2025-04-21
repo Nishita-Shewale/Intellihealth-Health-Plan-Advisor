@@ -28,64 +28,64 @@ Below are the tasks and subtasks assigned to **AnoushkaBansal** and **Nishita-Sh
 - [x] Clean CSV data - *Completed*
 - [x] Upload to Snowflake - *Completed*
   - **Nishita-Shewale**: (See Snowflake population task above)
-- [ ] Enhance normalization
+- [x]  Enhance normalization - *Completed*
   - **AnoushkaBansal**: Extend `normalize_snowflake_data` to handle edge cases (e.g., malformed dates, null values in critical fields).
 
 ## 4. API Development
 - **Patient Endpoints**
-  - [ ] `PUT /patients/{patient_id}`
+  - [x] `PUT /patients/{patient_id}` - *Completed*
     - **AnoushkaBansal**: Implement update logic with Pydantic validation for partial updates, test with sample data.
-  - [ ] `DELETE /patients/{patient_id}`
+  - [x] `DELETE /patients/{patient_id}` - *Completed*
     - **AnoushkaBansal**: Add delete endpoint, ensure cascading removal of Neo4j relationships, test edge cases.
-  - [ ] Enhance `POST /patients/`
+  - [x] Enhance `POST /patients/` - *Completed*
     - **Nishita-Shewale**: Add duplicate check (e.g., name + age combo) to prevent redundant entries, return 409 conflict if duplicate found.
 - **Insurance Plan Endpoints**
-  - [ ] Ensure pagination consistency
+  - [x] Ensure pagination consistency - *Completed*
     - **Nishita-Shewale**: Standardize `skip` and `limit` parameters across all GET endpoints, test with large datasets (e.g., 1000+ plans).
 - **Error Handling**
-  - [ ] Add logging
+  - [x] Add logging - *Completed*
     - **Nishita-Shewale**: Integrate Python `logging` module, configure to write errors to `intellihealth.log`, test with simulated failures.
 
 ## 5. Rule Engine
-- [ ] Expand rule set
+- [x] Expand rule set - *Completed*
   - **AnoushkaBansal**: Add rules for `smoking_status` (e.g., prioritize plans with wellness programs) and `physical_activity_level` (e.g., filter for preventive care benefits).
   - **Nishita-Shewale**: Create 5 diverse patient profiles to test new rules, document results in `rule_tests.md`.
-- [ ] Optimize Neo4j queries
+- [x] Optimize Neo4j queries - *Completed*
   - **AnoushkaBansal**: Add indexes (`CREATE INDEX ON :Patient(id)`, `CREATE INDEX ON :Plan(plan_type)`), measure query speed before/after.
-- [ ] Integrate CoT reasoning
+- [x] Integrate CoT reasoning - *Completed*
   - **Nishita-Shewale**: Experiment with OpenAI o1 for rule prioritization (e.g., explain why a plan is recommended), log findings in `cot_research.md`.
 
 ## 6. Testing
-- [ ] Unit Tests
+- [x] Unit Tests - *Completed*
   - **Nishita-Shewale**: Write `test_patient_endpoints.py` covering CRUD operations, use `pytest` with mock data.
   - **AnoushkaBansal**: Write `test_plan_processing.py` for plan retrieval and normalization, test edge cases (e.g., missing fields).
-- [ ] Integration Tests
+- [x] Integration Tests - *Completed*
   - **Nishita-Shewale**: Develop `test_end_to_end.py` for patient creation → plan recommendation flow, validate output structure.
-- [ ] LLM Validation
+- [x] LLM Validation - *Completed*
   - **AnoushkaBansal**: Compare CoT LLM outputs (o1, Deepseek R1) against baseline rules, quantify accuracy improvements in `cot_research.md`.
 
 ## 7. Documentation
 - [x] Draft README - *Completed*
-- [ ] Enhance Setup Instructions
+- [x] Enhance Setup Instructions - *Completed*
   - **Nishita-Shewale**: Add `.env` example and troubleshooting tips (e.g., common Docker errors) to README.
-- [ ] API Examples
+- [x] API Examples - *Completed*
   - **AnoushkaBansal**: Document 3-5 sample payloads (e.g., `POST /process-plans/`, `GET /plan-distribution/`) in README.
-- [ ] Research Paper Support
+- [x] Research Paper Support - *Completed*
   - **Nishita-Shewale**: Draft initial `cot_research.md` with CoT experiment setup, hypotheses, and early results.
 
 ## 8. UI Development
-- [ ] Streamlit UI
+- [x] Streamlit UI - *Completed*
   - **Nishita-Shewale**: Finalize Streamlit app in Docker, implement patient input form with validation.
   - **AnoushkaBansal**: Connect Streamlit to FastAPI endpoints (e.g., `POST /patients/`), ensure UI reflects API responses, test responsiveness.
 
 ## 9. Deployment
-- [ ] Production Server
+- [x] Production Server - *Completed*
   - **Nishita-Shewale**: Configure Gunicorn + Uvicorn in `docker-compose.prod.yml`, test with 10 concurrent requests.
-- [ ] CI/CD
+- [x] CI/CD - *Completed*
   - **AnoushkaBansal**: Set up GitHub Actions workflow (lint, test, deploy), ensure all tests pass before deployment.
 
 ## 10. Enhancements
-- [ ] Authentication
+- [x] Authentication - *Completed*
   - **AnoushkaBansal**: Implement JWT-based authentication for API endpoints, secure `POST /patients/` and `/process-plans/`.
-- [ ] Scalability
+- [x] Scalability - *Completed*
   - **Nishita-Shewale**: Add Redis caching for frequent plan queries (e.g., `GET /insurance-plans/`), measure performance gains.
