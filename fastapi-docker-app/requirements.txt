@@ -6,3 +6,6 @@ pandas
 pydantic
 neo4j
 snowflake-connector-python
+streamlit
+seaborn
+matplotlib
