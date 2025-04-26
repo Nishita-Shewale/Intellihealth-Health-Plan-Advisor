@@ -1,6 +1,6 @@
 # IntelliHealth WorkLogs
 
-Below are the tasks and subtasks assigned to **AnoushkaBansal** and **Nishita-Shewale**,reflecting the current state of the project as of April 09, 2025. Tasks are prioritized to align with ongoing work and goals for April 2025.
+Below are the tasks and subtasks assigned to **AnoushkaBansal** and **Nishita-Shewale**,reflecting the current state of the project as of April 20, 2025. Tasks are prioritized to align with ongoing work and goals for April 2025.
 
 ## 1. Project Setup
 - [x] Initialize Git repository - *Completed*
